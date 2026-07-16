@@ -19,6 +19,6 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-The Gyazo token is used only by the server route at `POST /api/upload` and is not sent to the browser. Never commit `.env.local` or paste the token into frontend code.
+The token is used only by the server route at `POST /api/upload`. Never commit `.env.local` or place the token in frontend code.
 
-Because the token shown in the reference screenshot is visible, regenerate it in the Gyazo dashboard before using this project.
+Regenerate the token shown in the reference screenshot before using this project because it is publicly visible.
