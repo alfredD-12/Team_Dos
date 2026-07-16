@@ -1,34 +1,45 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
 type UploadResult = {
   image_id: string;
   permalink_url: string;
+  thumb_url?: string;
   url: string;
+  created_at?: string;
 };
-
-const STORAGE_KEY = "team-dos-upload-history";
 
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploads, setUploads] = useState<UploadResult[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadImages = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) setUploads(JSON.parse(saved));
-    } catch {
-      setUploads([]);
+      const response = await fetch("/api/images", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Could not load images.");
+      }
+
+      setUploads(data.images ?? []);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Could not load images.");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  function saveUploads(nextUploads: UploadResult[]) {
-    setUploads(nextUploads);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUploads));
-  }
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,12 +67,10 @@ export default function HomePage() {
         throw new Error(data.message || "Upload failed.");
       }
 
-      saveUploads([data, ...uploads]);
       setFile(null);
+      await loadImages();
     } catch (uploadError) {
-      setError(
-        uploadError instanceof Error ? uploadError.message : "Upload failed."
-      );
+      setError(uploadError instanceof Error ? uploadError.message : "Upload failed.");
     } finally {
       setUploading(false);
     }
@@ -73,16 +82,18 @@ export default function HomePage() {
         <aside className="galleryPanel">
           <div className="galleryHeader">
             <div>
-              <span className="eyebrow">UPLOAD HISTORY</span>
+              <span className="eyebrow">SHARED GALLERY</span>
               <h2>All images</h2>
             </div>
             <span className="count">{uploads.length}</span>
           </div>
 
-          {uploads.length === 0 ? (
+          {loading ? (
+            <div className="emptyState"><p>Loading images...</p></div>
+          ) : uploads.length === 0 ? (
             <div className="emptyState">
               <span>□</span>
-              <p>Your uploaded images will appear here.</p>
+              <p>Images uploaded through this app will appear here for everyone.</p>
             </div>
           ) : (
             <div className="galleryGrid">
@@ -95,7 +106,7 @@ export default function HomePage() {
                   key={upload.image_id}
                   title="View on Gyazo"
                 >
-                  <img src={upload.url} alt="Uploaded image" />
+                  <img src={upload.thumb_url || upload.url} alt="Uploaded image" />
                 </a>
               ))}
             </div>
@@ -107,7 +118,7 @@ export default function HomePage() {
             <div className="logo">↑</div>
             <div>
               <h1>Upload an image</h1>
-              <p>Choose one image, upload it to Gyazo, and view it in your gallery.</p>
+              <p>Uploads are saved to the shared Gyazo account and appear for every visitor.</p>
             </div>
           </header>
 
@@ -141,7 +152,7 @@ export default function HomePage() {
               <div className="resultHeader">
                 <div>
                   <small>LATEST UPLOAD</small>
-                  <h2>Your image</h2>
+                  <h2>Newest image</h2>
                 </div>
                 <a href={uploads[0].permalink_url} target="_blank" rel="noreferrer">
                   View on Gyazo ↗
