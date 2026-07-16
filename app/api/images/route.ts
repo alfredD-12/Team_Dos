@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const accessToken = process.env.GYAZO_ACCESS_TOKEN;
+  const accessToken = "td4tg_85QzWiIW069uxUGoTzcg5roAD1YouyHXED1mI";
 
   if (!accessToken) {
     return NextResponse.json(
