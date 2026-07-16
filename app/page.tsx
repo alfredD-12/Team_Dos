@@ -54,19 +54,33 @@ export default function HomePage() {
   return (
     <main className="page">
       <section className="panel">
-        <h1>Image Upload</h1>
-        <p className="intro">Choose an image and upload it to Gyazo.</p>
+        <header className="header">
+          <div className="logo">↑</div>
+          <div>
+            <h1>Upload an image</h1>
+            <p>Choose one image, upload it to Gyazo, and view the result.</p>
+          </div>
+        </header>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="image">Image</label>
+          <label className="fileBox" htmlFor="image">
+            <span className="fileIcon">＋</span>
+            <strong>{file ? file.name : "Choose an image"}</strong>
+            <small>{file ? "Ready to upload" : "PNG, JPG, GIF, or WebP"}</small>
+          </label>
+
           <input
             id="image"
+            className="fileInput"
             type="file"
             accept="image/*"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            onChange={(event) => {
+              setFile(event.target.files?.[0] ?? null);
+              setError("");
+            }}
           />
 
-          <button type="submit" disabled={uploading}>
+          <button type="submit" disabled={uploading || !file}>
             {uploading ? "Uploading..." : "Upload image"}
           </button>
         </form>
@@ -75,11 +89,18 @@ export default function HomePage() {
 
         {result && (
           <section className="result">
-            <h2>Uploaded image</h2>
-            <img src={result.url} alt="Uploaded to Gyazo" />
-            <a href={result.permalink_url} target="_blank" rel="noreferrer">
-              View on Gyazo
-            </a>
+            <div className="resultHeader">
+              <div>
+                <small>UPLOAD COMPLETE</small>
+                <h2>Your image</h2>
+              </div>
+              <a href={result.permalink_url} target="_blank" rel="noreferrer">
+                View on Gyazo ↗
+              </a>
+            </div>
+            <div className="imageFrame">
+              <img src={result.url} alt="Uploaded to Gyazo" />
+            </div>
           </section>
         )}
       </section>
