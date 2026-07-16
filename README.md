@@ -1,8 +1,16 @@
-# Team Dos Directory
+# Team Dos Image Upload
 
-A polished, responsive full-stack directory built with Next.js. It includes live search, a create form, validation, loading and empty states, and a lightweight API.
+A simple Next.js page that uploads one image to Gyazo and displays the uploaded image.
 
-## Run locally
+## Setup
+
+Create a `.env.local` file in the project root:
+
+```env
+GYAZO_ACCESS_TOKEN=your_gyazo_access_token_here
+```
+
+Then run:
 
 ```bash
 npm install
@@ -11,26 +19,4 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## API
-
-### Search or list items
-
-```http
-GET /api/items
-GET /api/items?q=design
-```
-
-### Create an item
-
-```http
-POST /api/items
-Content-Type: application/json
-
-{
-  "name": "Project brief",
-  "category": "Strategy",
-  "description": "Goals, scope, and milestones for the project."
-}
-```
-
-> This demo stores data in server memory. New records reset whenever the development server restarts or a serverless instance is replaced.
+The Gyazo token is used only by the server route at `POST /api/upload` and is not sent to the browser.
