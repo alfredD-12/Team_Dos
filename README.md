@@ -18,6 +18,6 @@ npm run dev
 Open `http://localhost:3000`.
 
 # Team Members
- Gludo, David Alfred C.
- Acbang, Ryan Joseph P.
- Soriano, Jerard Paul V.
+ - Gludo, David Alfred C.
+ - Acbang, Ryan Joseph P.
+ - Soriano, Jerard Paul V.
